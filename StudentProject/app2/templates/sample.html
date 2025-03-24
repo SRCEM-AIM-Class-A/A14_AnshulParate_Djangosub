@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Now - MyShop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    
+    <!-- Navigation Bar -->
+    <nav class="bg-teal-700 p-4 text-white shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-2xl font-bold">MyShop</a>
+            <div>
+                <a href="/home" class="px-4 hover:underline">Home</a>
+                <a href="/shop" class="px-4 hover:underline font-bold">Shop Now</a>
+                <a href="/about" class="px-4 hover:underline">About</a>
+                <a href="/contact" class="px-4 hover:underline">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Shop Now Header -->
+    <div class="bg-teal-800 text-white py-10 text-center">
+        <h1 class="text-4xl font-bold">Welcome to Our Shop</h1>
+        <p class="mt-2 text-lg">Browse our exclusive collection and grab the best deals!</p>
+    </div>
+
+    <!-- Go Back Button -->
+    <div class="container mx-auto mt-6 px-4">
+        <button onclick="history.back()" class="bg-gray-600 text-white px-4 py-2 rounded shadow hover:bg-gray-800 transition">Go Back</button>
+    </div>
+
+    <!-- Products Section -->
+    <div class="container mx-auto mt-10 px-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <!-- Sample Product 1 -->
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <img src="https://source.unsplash.com/300x300/?laptop" alt="Laptop" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-xl font-semibold">Laptop</h3>
+                    <p class="text-gray-600">Powerful and stylish laptop for professionals.</p>
+                    <p class="text-teal-700 font-bold mt-2">$899</p>
+                    <button class="mt-3 w-full bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-700 transition">Add to Cart</button>
+                </div>
+            </div>
+
+            <!-- Sample Product 2 -->
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <img src="https://source.unsplash.com/300x300/?smartphone" alt="Smartphone" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-xl font-semibold">Smartphone</h3>
+                    <p class="text-gray-600">Latest smartphone with advanced features.</p>
+                    <p class="text-teal-700 font-bold mt-2">$699</p>
+                    <button class="mt-3 w-full bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-700 transition">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-teal-800 text-white mt-12 py-6 text-center">
+        <p>&copy; 2025 MyShop. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
