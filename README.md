@@ -16,6 +16,6 @@ Follow these steps to set up and run the project on your local machine.
 
 ### **1️⃣ Clone the Repository**
 ```sh
-git https://github.com/SRCEM-AIM-Class-A/A14_AnshulParate_DjangoApp.git
-cd A14_AnshulParate_DjangoApp
+git clone https://github.com/SRCEM-AIM-Class-A/A14_AnshulParate_Djangosub.git
+cd A14_AnshulParate_Djangosub
 
