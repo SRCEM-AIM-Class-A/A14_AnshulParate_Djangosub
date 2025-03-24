@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/SRCEM-AIM-Class-A/A14_AnshulParate_Django.git'
+                git 'https://github.com/SRCEM-AIM-Class-A/A14_AnshulParate_Djangosub.git'
             }
         }
         stage('Build Docker Image') {
