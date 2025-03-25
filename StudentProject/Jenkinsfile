@@ -1,6 +1,9 @@
 pipeline {
     agent any
-
+    environment {
+        IMAGE_NAME = "anshulnp/studentproject"
+        CONTAINER_NAME = "studentproject_container"
+    }
     stages {
         stage('Clone Repository') {
             steps {
@@ -8,18 +11,49 @@ pipeline {
             }
         }
 
+        stage('Run Tests') {
+            steps {
+                sh 'python -m venv venv && source venv/bin/activate && pip install -r requirements.txt && pytest && deactivate'
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t anshulnp/studentproject .'
+                sh 'docker build -t ${IMAGE_NAME} .'
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                withDockerRegistry([credentialsId: 'docker-hub-credentials', url: '']) {
-                    sh 'docker push anshulnp/studentproject'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
+                    sh "docker push ${IMAGE_NAME}"
                 }
             }
+        }
+
+        stage('Deploy') {
+            steps {
+                sshagent(['server-ssh-key']) {
+                    sh """
+                    ssh user@your-server-ip << EOF
+                    docker pull ${IMAGE_NAME}
+                    docker stop ${CONTAINER_NAME} || true
+                    docker rm ${CONTAINER_NAME} || true
+                    docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${IMAGE_NAME}
+                    EOF
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline executed successfully!"
+        }
+        failure {
+            echo "Pipeline execution failed!"
         }
     }
 }
