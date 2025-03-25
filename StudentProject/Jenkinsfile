@@ -1,28 +1,77 @@
 
 pipeline {
     agent any
+    environment {
+        IMAGE_NAME = "anshulnp/studentproject"
+        CONTAINER_NAME = "studentproject_container"
+    }
     stages {
-        stage('Clone Repository') {
+        stage('Checkout Code') {
             steps {
-                git 'https://github.com/SRCEM-AIM-Class-A/A14_AnshulParate_Djangosub.git'
-            }
-        }
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t anshulnp/studentproject .'
-            }
-        }
-        stage('Login to Docker Hub') {
-            steps {
-                withCredentials([string(credentialsId: 'docker-hub-password', variable: 'DOCKER_PASSWORD')]) {
-                    sh 'echo $DOCKER_PASSWORD | docker login -u anshulnp --password-stdin'
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                        sh 'git clone https://${GIT_USER}:${GIT_PASS}@github.com/SRCEM-AIM-Class-A/A14_AnshulParate_Djangosub.git
+'
+
+                    }
                 }
             }
         }
-        stage('Push Docker Image') {
+
+        stage('Build and Test') {
             steps {
-                sh 'docker push anshulnp/studentproject'
+                script {
+                    sh 'docker run --rm -v $(pwd):/app -w /app python:3.9 pip install -r requirements.txt'
+                    sh 'docker run --rm -v $(pwd):/app -w /app python:3.9 pytest'
+                }
             }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build("${IMAGE_NAME}:${env.BUILD_NUMBER}")
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
+                        sh "docker tag ${IMAGE_NAME}:${env.BUILD_NUMBER} ${IMAGE_NAME}:latest"
+                        sh "docker push ${IMAGE_NAME}:${env.BUILD_NUMBER}"
+                        sh "docker push ${IMAGE_NAME}:latest"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    sshagent(['server-ssh-key']) {
+                        sh """
+                        ssh user@your-server-ip << EOF
+                        docker pull ${IMAGE_NAME}:latest
+                        docker stop ${CONTAINER_NAME} || true
+                        docker rm ${CONTAINER_NAME} || true
+                        docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${IMAGE_NAME}:latest
+                        EOF
+                        """
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline completed successfully!"
+        }
+        failure {
+            echo "Pipeline failed!"
         }
     }
 }
