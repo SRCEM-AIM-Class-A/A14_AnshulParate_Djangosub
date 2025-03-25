@@ -1,27 +1,25 @@
 
 pipeline {
     agent any
+
     stages {
         stage('Clone Repository') {
             steps {
                 git 'https://github.com/SRCEM-AIM-Class-A/A14_AnshulParate_Djangosub.git'
             }
         }
+
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t anshulnp/studentproject .'
             }
         }
-        stage('Login to Docker Hub') {
+
+        stage('Push to Docker Hub') {
             steps {
-                withCredentials([string(credentialsId: 'docker-hub-password', variable: 'DOCKER_PASSWORD')]) {
-                    sh 'echo $DOCKER_PASSWORD | docker login -u anshulnp --password-stdin'
+                withDockerRegistry([credentialsId: 'docker-hub-credentials', url: '']) {
+                    sh 'docker push anshulnp/studentproject'
                 }
-            }
-        }
-        stage('Push Docker Image') {
-            steps {
-                sh 'docker push anshulnp/studentproject'
             }
         }
     }
